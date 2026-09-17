@@ -1,6 +1,8 @@
 
+using LSW._02._Scripts.Common;
 using LSW._02._Scripts.System.PoolSystems;
 using LSW._02._Scripts.System.RoomSystems;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -9,6 +11,7 @@ namespace LSW._02._Scripts.UI.InGame
     public class RoomSelectionButton : MonoBehaviour, IPoolable
     {
         [SerializeField] private Button button;
+        [SerializeField] private TextMeshProUGUI nameText;
 
         private RoomNode _room;
         private RoomSelectUI _roomSelectUI;
@@ -20,11 +23,12 @@ namespace LSW._02._Scripts.UI.InGame
         {
             _room = room;
             _roomSelectUI = roomSelectUI;
+            
+            nameText.SetText(room.Type.ToString());
 
             button.onClick.RemoveAllListeners();
             button.onClick.AddListener(OnClick);
-
-            // ★ 매번 새 데이터에 맞춰 상태를 설정
+            
             button.interactable = interactable;
         }
 

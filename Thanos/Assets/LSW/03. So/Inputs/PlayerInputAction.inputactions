@@ -43,6 +43,15 @@
                     "initialStateCheck": false
                 },
                 {
+                    "name": "Parry",
+                    "type": "Button",
+                    "id": "9604e70d-2bb8-4da6-ad91-6ffecd391800",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
                     "name": "UseStone",
                     "type": "Button",
                     "id": "1a71c01a-5221-46dd-a656-37f8850abc77",
@@ -374,6 +383,17 @@
                     "processors": "",
                     "groups": ";Keyboard&Mouse",
                     "action": "UseStone",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "f6928c50-2561-4d11-993e-fa97422885bc",
+                    "path": "<Mouse>/rightButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Keyboard&Mouse",
+                    "action": "Parry",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

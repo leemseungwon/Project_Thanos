@@ -13,7 +13,7 @@ TagManager:
   - UI
   - Enemy
   - Interactable
-  - 
+  - Player
   - 
   - 
   - 
@@ -55,6 +55,9 @@ TagManager:
     locked: 0
   - name: Entity
     uniqueID: 3815954129
+    locked: 0
+  - name: UI
+    uniqueID: 1820683915
     locked: 0
   m_RenderingLayers:
   - Default

@@ -15,6 +15,7 @@ namespace LSW._03._So.Inputs
         public event Action OnInteractionPressed;
         public event Action OnUseStonePressed;
         public event Action<bool> OnSwitchNextPressed; 
+        public event Action OnParryPressed;
         
         public Vector2 MousePosition { get; private set; }
         public Vector2 MoveInput { get; private set; }
@@ -57,6 +58,12 @@ namespace LSW._03._So.Inputs
         {
             if(context.started)
                 OnAttackPressed?.Invoke();
+        }
+        
+        public void OnParry(InputAction.CallbackContext context)
+        {
+            if (context.started)
+                OnParryPressed?.Invoke();
         }
 
         public void OnUseStone(InputAction.CallbackContext context)

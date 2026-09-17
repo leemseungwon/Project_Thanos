@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: PlayerStatData
   m_EditorClassIdentifier: 
   initMaxHp: 100
-  initAttackDamage: 5
+  initAttackDamage: 3
   initMoveSpeed: 10
   dashSpeed: 20
   dashDuration: 0.2

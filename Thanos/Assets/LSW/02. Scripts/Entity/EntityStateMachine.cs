@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using LSW._02._Scripts.Common;
 using UnityEngine;
@@ -25,7 +26,7 @@ namespace LSW._02._Scripts.Entity
             CurrentState.Value.State.Enter();
         }
 
-        public void ChangeState(string newState)
+        public void ChangeState(string newState, Action endAction = null)
         {
             if (CurrentState == null || CurrentState.Value.stateName == newState)
                 return;
@@ -35,7 +36,7 @@ namespace LSW._02._Scripts.Entity
             if (GetState(newState, out StateData newStateData))
             {
                 CurrentState = newStateData;
-                CurrentState.Value.State.Enter();
+                CurrentState.Value.State.Enter(endAction);
             }
             else
             {
@@ -68,9 +69,16 @@ namespace LSW._02._Scripts.Entity
                 return;
             CurrentState.Value.State.FixedUpdate();
         }
-        
-        ~EntityStateMachine()
+
+        public void OnDestroy()
         {
+            if(_stateDataList == null || _stateDataList.Count == 0)
+                return;
+            
+            foreach (var state in _stateDataList)
+            {
+                state.State.Dispose();
+            }
             _stateDataList = null;
         }
     }

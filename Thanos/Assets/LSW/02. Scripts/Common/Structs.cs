@@ -18,4 +18,18 @@ namespace LSW._02._Scripts.Common
         public GameObject poolObject;
         public int initialPoolSize;
     }
+
+    public struct ParryData
+    {
+        public readonly int ReflectDamage;
+        public readonly float KnockbackPower;
+        public readonly float StunDuration;
+        
+        public ParryData(int reflectDamage, float knockbackPower, float stunDuration)
+        {
+            ReflectDamage = reflectDamage;
+            KnockbackPower = knockbackPower;
+            StunDuration = stunDuration;
+        }
+    }
 }

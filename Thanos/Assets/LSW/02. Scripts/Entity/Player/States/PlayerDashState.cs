@@ -1,3 +1,4 @@
+using System;
 using LSW._03._So.Entity_Stats.Player;
 using UnityEngine;
 
@@ -7,18 +8,28 @@ namespace LSW._02._Scripts.Entity.Player.States
     {
         private readonly PlayerController _player;
         private readonly PlayerStatData _playerStatData;
+        private readonly PlayerAnimation _playerAnimation;
         
         private float _timer;
 
         public PlayerDashState(BaseEntity player)
             : base(player)
         {
-            _player = (PlayerController) player;
-            _playerStatData = (PlayerStatData) player.StatData;
+            _player = player as PlayerController;
+            _playerStatData = player.StatData as PlayerStatData;
+            if (Animation != null)
+            {
+                _playerAnimation = Animation as PlayerAnimation;
+            }
         }
 
-        public override void Enter()
+        public override void Enter(Action endAction = null)
         {
+            base.Enter(endAction);
+            
+            if(_playerAnimation != null)
+                _player.Animation.SetParam(_playerAnimation.DashAnimationData);
+            
             _timer = _playerStatData.dashDuration;
 
             Vector2 direction = _player.LookDirection;
@@ -26,10 +37,7 @@ namespace LSW._02._Scripts.Entity.Player.States
             if (direction.sqrMagnitude <= 0.01f)
                 direction = Vector2.right;
 
-            _player.Movement.Dash(
-                direction,
-                _playerStatData.dashSpeed
-            );
+            _player.Movement.Dash(direction, _playerStatData.dashSpeed);
         }
     
         public override void Update()
@@ -38,12 +46,13 @@ namespace LSW._02._Scripts.Entity.Player.States
 
             if (_timer <= 0f)
             {
-                _player.StateMachine.ChangeState("PlayerMoveState");
+                _player.StateMachine.ChangeState(PlayerController.MoveState);
             }
         }
 
         public override void Exit()
         {
+            base.Exit();
             _player.Movement.Stop();
         }
     }

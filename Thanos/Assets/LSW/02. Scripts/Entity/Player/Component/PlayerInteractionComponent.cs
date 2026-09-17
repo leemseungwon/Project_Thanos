@@ -60,6 +60,8 @@ namespace LSW._02._Scripts.Entity.Player.Component
             closestInteractable.Interact();
         }
 
+        public void Reset() { }
+        
         private void OnDestroy()
         {
             if (_playerController != null)

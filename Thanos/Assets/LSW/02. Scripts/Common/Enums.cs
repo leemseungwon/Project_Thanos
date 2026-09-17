@@ -33,4 +33,21 @@ namespace LSW._02._Scripts.Common
         Event,
         Boss
     }
+    
+    [Serializable]
+    public enum StoneType
+    {
+        Space,
+        Time,
+        Reality,
+        Soul,
+        Power,
+        Mind
+    }
+
+    public enum SlimeAttackType
+    {
+        Front,
+        Whirlwind
+    }
 }
