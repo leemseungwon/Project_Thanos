@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: PowerStone
   m_EditorClassIdentifier: 
   stoneType: 4
-  stoneName: Power Stone
+  stoneName: PowerStone
   stoneSprite: {fileID: 1790831928422374409, guid: 528ef4680a5d09146941004909b5bf35, type: 3}
   requiredDamage: 100
   attackData: {fileID: 11400000, guid: a8bb7e659e5f5834ca7c1f753da16f8b, type: 2}

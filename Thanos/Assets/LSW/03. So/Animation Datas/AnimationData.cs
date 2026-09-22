@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace LSW._03._So.Animation_Datas
 {
-    [CreateAssetMenu(fileName = "Animation Hash", menuName = "So/Data/Animation/Animation Hash", order = 0)]
+    [CreateAssetMenu(fileName = "Animation Hash", menuName = "So/Data/Animation/Animation Data", order = 0)]
     public class AnimationData : ScriptableObject
     {
         public string animationName;

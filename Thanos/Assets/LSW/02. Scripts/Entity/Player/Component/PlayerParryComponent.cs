@@ -1,6 +1,7 @@
 using System;
 using LSW._02._Scripts.Common;
-using LSW._03._So.Attack_Data;
+using LSW._03._So.Attack_Data.Enemy;
+using LSW._03._So.Attack_Data.Player;
 using UnityEngine;
 
 namespace LSW._02._Scripts.Entity.Player.Component
@@ -8,7 +9,7 @@ namespace LSW._02._Scripts.Entity.Player.Component
     public class PlayerParryComponent : MonoBehaviour, IEntityComponent
     {
         [Header("Parry")] 
-        [SerializeField] private AttackData parryAttackData;
+        [SerializeField] private PlayerAttackData parryAttackData;
         [SerializeField] private float parryDuration = 0.25f;
         [SerializeField] private float parryCooldown = 1f;
 
@@ -89,10 +90,21 @@ namespace LSW._02._Scripts.Entity.Player.Component
             return true;
         }
 
-        public bool TryParry(BaseEntity attacker, int damage, float knockBackPower, float stunDuration)
+        public bool TryParry(BaseEntity attacker, int damage, float knockBackPower, float stunDuration, EnemyAttackData attackData = null)
         {
-            if (!IsParrying || _parryData != null || parryAttackData == null)
+            if (!IsParrying || parryAttackData == null)
                 return false;
+
+            if (attackData != null && !attackData.canParry)
+            {
+                _isParryingSuccess = false;
+                EndReadyParry();
+                return false;
+            }
+
+            // 이미 패링 데이터가 있는 경우(다단 히트 등) 무시하거나 갱신
+            if (_parryData != null)
+                return true; 
 
             int reflectDamage =
                 Mathf.FloorToInt(damage * reflectRatio)
@@ -132,11 +144,11 @@ namespace LSW._02._Scripts.Entity.Player.Component
             
             _cooldownTimer = parryCooldown;
             
-            OnParryEnd?.Invoke(_isParryingSuccess);
-            _isParryingSuccess = false;
-            
             IsParrying = false;
             _parryTimer = 0f;
+            
+            OnParryEnd?.Invoke(_isParryingSuccess);
+            _isParryingSuccess = false;
         }
         
         public void CompleteParry()

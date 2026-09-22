@@ -1,6 +1,5 @@
-using System;
+
 using LSW._02._Scripts.Entity.Player;
-using LSW._03._So.Attack_Data;
 using UnityEngine;
 
 namespace LSW._02._Scripts.Entity.Enemy.Components
@@ -9,13 +8,13 @@ namespace LSW._02._Scripts.Entity.Enemy.Components
     {
         protected BaseEntity Owner;
 
-        public void Initialize(BaseEntity owner)
+        public virtual void Initialize(BaseEntity owner)
         {
             Owner = owner;
         }
 
         public abstract void Reset();
-
+        
         public abstract bool TryAttack(PlayerController enemy);
     }
 }

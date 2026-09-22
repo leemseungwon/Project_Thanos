@@ -81,16 +81,20 @@ namespace LSW._02._Scripts.Entity.Enemy
             if (Mathf.Abs(direction.x) < 0.01f)
                 return;
 
+            Vector3 scale = transform.localScale;
+
             if (direction.x > 0f)
             {
                 FacingDirection = 1;
-                spriteRenderer.flipX = false;
+                scale.x = Mathf.Abs(scale.x);
             }
             else
             {
                 FacingDirection = -1;
-                spriteRenderer.flipX = true;
+                scale.x = -Mathf.Abs(scale.x);
             }
+
+            transform.localScale = scale;
         }
 
         public void FlipTo(Vector2 targetPosition)

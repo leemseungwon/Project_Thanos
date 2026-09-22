@@ -1,6 +1,7 @@
 using LSW._02._Scripts.Entity;
 using LSW._02._Scripts.Entity.Player;
 using LSW._03._So.Attack_Data;
+using LSW._03._So.Attack_Data.Player;
 using UnityEngine;
 
 namespace LSW._03._So.Stone_Data.Stones
@@ -12,7 +13,7 @@ namespace LSW._03._So.Stone_Data.Stones
         [SerializeField] private int requiredDamage = 100;
 
         [Header("Ability")]
-        [SerializeField] private AttackData attackData;
+        [SerializeField] private PlayerAttackData attackData;
         [SerializeField] private LayerMask enemyLayer;
         [SerializeField] private float range = 4f;
         [SerializeField] private float angle = 60f;

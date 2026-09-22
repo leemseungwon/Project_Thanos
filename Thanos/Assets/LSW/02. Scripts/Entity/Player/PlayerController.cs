@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using LSW._02._Scripts.Common;
 using LSW._02._Scripts.Entity.Player.Component;
 using LSW._02._Scripts.Entity.Player.States;
+using LSW._03._So.Attack_Data.Enemy;
 using LSW._03._So.Inputs;
 using UnityEngine;
 
@@ -110,34 +111,45 @@ namespace LSW._02._Scripts.Entity.Player
             LookAtMouse();
         }
 
-        private void LookAtMouse()
+        public void LookAtMouse()
         {
-            Vector3 mouseWorldPosition =
-                PlayerCamera.ScreenToWorldPoint(new Vector3(Input.MousePosition.x, Input.MousePosition.y,
-                        Mathf.Abs(PlayerCamera.transform.position.z - transform.position.z)));
+            if (PlayerCamera == null || Input == null || Animation == null)
+                return;
+
+            Vector3 mouseWorldPosition = PlayerCamera.ScreenToWorldPoint(new Vector3(
+                Input.MousePosition.x, 
+                Input.MousePosition.y,
+                Mathf.Abs(PlayerCamera.transform.position.z - transform.position.z)));
 
             bool isLeft = mouseWorldPosition.x < transform.position.x;
+            UpdateFacingDirection(isLeft);
+        }
+
+        private void UpdateFacingDirection(bool isLeft)
+        {
             Vector3 position = _originalPosition;
             position.x = isLeft ? -_originalPosition.x : _originalPosition.x;
-
             Animation.transform.localPosition = position;
 
-            Animation.transform.localScale = new Vector3(isLeft ? -Mathf.Abs(_originalScale.x) 
-                    : Mathf.Abs(_originalScale.x), _originalScale.y, _originalScale.z);
+            Vector3 scale = _originalScale;
+            scale.x = isLeft ? -Mathf.Abs(_originalScale.x) : Mathf.Abs(_originalScale.x);
+            Animation.transform.localScale = scale;
 
             LookDirection = isLeft ? Vector2.left : Vector2.right;
         }
-        
+
+        private bool CanPerformAction()
+        {
+            return StateMachine != null && !_isParrying && !Combat.IsAttacking;
+        }
+
         private void HandleParry()
         {
-            if (StateMachine == null || _isParrying || Combat.IsAttacking)
+            if (!CanPerformAction() || Parry == null || !Parry.CanParry)
                 return;
 
-            if (Parry == null || !Parry.CanParry)
-                return;
-
-            StateMachine.ChangeState(ParryState, () => _isParrying = false);
             _isParrying = true;
+            StateMachine.ChangeState(ParryState, () => _isParrying = false);
         }
 
         private void HandleStoneSwitch(bool isNext)
@@ -154,14 +166,15 @@ namespace LSW._02._Scripts.Entity.Player
 
         private void HandleDash()
         {
-            if(StateMachine == null || !Movement.IsEnabledMovement || _isParrying || Combat.IsAttacking)
+            if (!CanPerformAction() || !Movement.IsEnabledMovement)
                 return;
+
             StateMachine.ChangeState(DashState);
         }
 
         private void HandleAttack()
         {
-            if (StateMachine == null || _isParrying || Combat == null)
+            if (!CanPerformAction() || Combat == null)
                 return;
             
             if (Combat.IsAttacking)
@@ -185,18 +198,19 @@ namespace LSW._02._Scripts.Entity.Player
             
             StateMachine.ChangeState(AttackState);
         }
-        
-        public override bool TakeDamage(int finalDamage, Vector2 knockBackDirection, float knockBackPower = 0f, float stunDuration = 0f, BaseEntity attacker = null)
+
+        public bool TakeDamage(int finalDamage, Vector2 knockBackDirection, float knockBackPower, float stunDuration, 
+            BaseEntity attacker, EnemyAttackData attackData)
         {
-            if (Parry != null && Parry.TryParry(attacker, finalDamage, knockBackPower, stunDuration))
+            if (Parry != null && Parry.TryParry(attacker, finalDamage, knockBackPower, stunDuration, attackData))
             {
                 return true;
             }
 
-            return base.TakeDamage(finalDamage, knockBackDirection, knockBackPower, stunDuration, attacker);
+            return base.TakeDamage(finalDamage, knockBackDirection, knockBackPower, stunDuration, attacker, attackData);
         }
 
-        private void OnDestroy()
+        public override void OnDestroy()
         {
             if (Input != null)
             {

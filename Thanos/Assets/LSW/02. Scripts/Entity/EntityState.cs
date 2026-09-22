@@ -1,13 +1,17 @@
 using System;
+using UnityEngine;
 
 namespace LSW._02._Scripts.Entity
 {
+    [Serializable]
     public abstract class EntityState
     {
         protected readonly BaseEntity Entity;
         protected readonly EntityAnimation Animation;
         
         protected Action EndAction;
+
+        protected float StateTimer;
 
         protected EntityState(BaseEntity entity)
         {
@@ -17,6 +21,7 @@ namespace LSW._02._Scripts.Entity
 
         public virtual void Enter(Action endAction = null)
         {
+            StateTimer = 0f;
             if (endAction != null)
             {
                 EndAction = endAction;
@@ -29,7 +34,10 @@ namespace LSW._02._Scripts.Entity
             EndAction = null;
         }
 
-        public virtual void Update() { }
+        public virtual void Update()
+        {
+            StateTimer += Time.deltaTime;
+        }
 
         public virtual void FixedUpdate() { }
         

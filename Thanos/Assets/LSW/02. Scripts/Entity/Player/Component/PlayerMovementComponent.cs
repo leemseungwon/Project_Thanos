@@ -1,6 +1,5 @@
-using LSW._03._So.Stone_Data;
+
 using UnityEngine;
-using NotImplementedException = System.NotImplementedException;
 
 namespace LSW._02._Scripts.Entity.Player.Component
 {

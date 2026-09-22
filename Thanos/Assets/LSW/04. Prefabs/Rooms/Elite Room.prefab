@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7368509497453051482}
   - component: {fileID: 7269426939886239108}
-  - component: {fileID: 7885254766723012979}
+  - component: {fileID: 5056812096932354020}
   m_Layer: 0
   m_Name: Elite Room
   m_TagString: Untagged
@@ -88,7 +88,7 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &7885254766723012979
+--- !u!114 &5056812096932354020
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -97,6 +97,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 2380531646309844093}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e7ba02004d3d464f9c59220f5f4849a9, type: 3}
+  m_Script: {fileID: 11500000, guid: 3ec1f9fa822b4464ad6735db9b97d50f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isBossType: 0
+  specialRewardUI: {fileID: 0}

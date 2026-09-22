@@ -47,7 +47,7 @@ namespace LSW._02._Scripts.Entity.Player.States
             
             _isPlayingEndAnimation = false;
 
-            if (!_player.Parry.TryStartParry())
+            if (_parryComponent == null || !_parryComponent.TryStartParry())
             {
                 _player.StateMachine.ChangeState(PlayerController.IdleState);
                 return;

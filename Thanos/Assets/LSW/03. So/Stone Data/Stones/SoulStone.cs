@@ -1,6 +1,6 @@
 using LSW._02._Scripts.Entity;
 using LSW._02._Scripts.Entity.Player;
-using LSW._03._So.Attack_Data;
+using LSW._03._So.Attack_Data.Player;
 using UnityEngine;
 
 namespace LSW._03._So.Stone_Data.Stones
@@ -13,7 +13,7 @@ namespace LSW._03._So.Stone_Data.Stones
 
         [Header("Ability")]
         [SerializeField] private float explosionRadius = 5f;
-        [SerializeField] private AttackData attackData;
+        [SerializeField] private PlayerAttackData attackData;
         [SerializeField] private LayerMask enemyLayer;
 
         public int RequiredKillCount =>
@@ -37,7 +37,8 @@ namespace LSW._03._So.Stone_Data.Stones
                 
                 Vector2 dir = (hit.transform.position - owner.transform.position).normalized;
                 
-                enemy.TakeDamage(attackData.attackDamage + owner.CurrentAttackDamage, dir, attackData.knockbackPower, attackData.stunDuration, owner);
+                enemy.TakeDamage(attackData.attackDamage + owner.CurrentAttackDamage, 
+                    dir, attackData.knockbackPower, attackData.stunDuration, owner, attackData);
             }
         }
     }

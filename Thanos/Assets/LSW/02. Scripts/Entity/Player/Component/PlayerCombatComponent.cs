@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using LSW._03._So.Attack_Data;
+using LSW._03._So.Attack_Data.Player;
 using UnityEngine;
 
 namespace LSW._02._Scripts.Entity.Player.Component
@@ -8,7 +9,7 @@ namespace LSW._02._Scripts.Entity.Player.Component
     public class PlayerCombatComponent : MonoBehaviour, IEntityComponent
     {
         [Header("Attack")]
-        [SerializeField] private List<AttackData> normalAttackDataList;
+        [SerializeField] private List<PlayerAttackData> normalAttackDataList;
 
         [SerializeField] private float attackRange = 1.5f;
         [SerializeField] private Transform attackPoint;
@@ -221,7 +222,7 @@ namespace LSW._02._Scripts.Entity.Player.Component
                 return;
             }
 
-            AttackData attackData = normalAttackDataList[index];
+            PlayerAttackData attackData = normalAttackDataList[index];
 
             if (attackData == null)
                 return;

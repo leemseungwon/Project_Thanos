@@ -13,11 +13,11 @@ MonoBehaviour:
   m_Name: SoulStone
   m_EditorClassIdentifier: 
   stoneType: 3
-  stoneName: Soul Stone
+  stoneName: SoulStone
   stoneSprite: {fileID: 3326314182742149568, guid: 528ef4680a5d09146941004909b5bf35, type: 3}
   requiredKillCount: 5
   explosionRadius: 5
-  damage: 15
+  attackData: {fileID: 0}
   enemyLayer:
     serializedVersion: 2
     m_Bits: 64

@@ -43,6 +43,8 @@ namespace LSW._02._Scripts.System.RoomSystems
                 baseRoom.transform.SetParent(roomParent);
                 room.RuntimeObject = baseRoom;
                 _loadedRoom = room;
+
+                baseRoom.OnRoomCleared += HandleRoomCleared;
             }
         }
 
@@ -53,11 +55,20 @@ namespace LSW._02._Scripts.System.RoomSystems
 
             if (_loadedRoom.RuntimeObject != null)
             {
+                _loadedRoom.RuntimeObject.OnRoomCleared -= HandleRoomCleared;
                 _poolSystem.DespawnPool(GetPoolName(_loadedRoom.Type), _loadedRoom.RuntimeObject);
                 _loadedRoom.RuntimeObject = null;
             }
 
             _loadedRoom = null;
+        }
+
+        private void HandleRoomCleared()
+        {
+            if (SystemHandler.Instance != null && SystemHandler.Instance.GetSystem(out RoomSystem roomSystem))
+            {
+                roomSystem.ClearCurrentRoom();
+            }
         }
 
         private string GetPoolName(RoomType type)

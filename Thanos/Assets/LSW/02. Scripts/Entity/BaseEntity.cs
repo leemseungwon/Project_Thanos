@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using LSW._02._Scripts.Common;
+using LSW._03._So.Attack_Data;
 using LSW._03._So.Entity_Stats;
 using UnityEngine;
 
@@ -144,7 +145,8 @@ namespace LSW._02._Scripts.Entity
             CurrentHp = Mathf.Min(CurrentHp + amount, MaxHp);
         }
         
-        public virtual bool TakeDamage(int finalDamage, Vector2 knockBackDirection, float knockBackPower = 0f, float stunDuration = 0f, BaseEntity attacker = null)
+        public virtual bool TakeDamage(int finalDamage, Vector2 knockBackDirection, float knockBackPower, float stunDuration, 
+            BaseEntity attacker, AttackData attackData)
         {
             if (CurrentHp <= 0)
                 return false;

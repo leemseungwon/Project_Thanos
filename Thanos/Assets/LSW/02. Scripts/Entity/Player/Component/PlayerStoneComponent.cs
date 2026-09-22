@@ -39,6 +39,7 @@ namespace LSW._02._Scripts.Entity.Player.Component
         }
 
         public event Action<BaseStone, BaseStone> OnStoneChanged;
+        public event Action<BaseStone, bool> OnUpdateStoneUsable;
         public event Action<BaseStone, BaseStone> OnStoneCombo;
 
         public void Initialize(BaseEntity owner)
@@ -118,6 +119,7 @@ namespace LSW._02._Scripts.Entity.Player.Component
             
             equipedStones[changedIndex] = stone;
             OnStoneChanged?.Invoke(null, CurrentStone);
+            OnUpdateStoneUsable?.Invoke(CurrentStone, stoneState.CanUseStone(CurrentStone.StoneType));
         }
         
         public void UnEquipStone(BaseStone stone, int index)
@@ -185,6 +187,7 @@ namespace LSW._02._Scripts.Entity.Player.Component
                     }
                 }
             }
+            OnUpdateStoneUsable?.Invoke(CurrentStone, stoneState.CanUseStone(CurrentStone.StoneType));
         }
         
         private void HandleParryEnd(bool isSuccess)
@@ -269,37 +272,15 @@ namespace LSW._02._Scripts.Entity.Player.Component
             previousStone.OnSwitchExit(_player);
             currentStone.OnSwitchEnter(_player);
 
-            Debug.Log(
-                $"Stone Switch : " +
-                $"{previousStone.StoneName} ¡æ " +
-                $"{currentStone.StoneName}"
-            );
+            OnStoneChanged?.Invoke(previousStone, currentStone);
+            OnUpdateStoneUsable?.Invoke(currentStone, stoneState.CanUseStone(currentStone.StoneType));
 
-            OnStoneChanged?.Invoke(
-                previousStone,
-                currentStone
-            );
-
-            TryStoneCombo(
-                previousStone,
-                currentStone
-            );
+            TryStoneCombo(previousStone, currentStone);
         }
 
-        private void TryStoneCombo(
-            BaseStone previousStone,
-            BaseStone currentStone)
+        private void TryStoneCombo(BaseStone previousStone, BaseStone currentStone)
         {
-            Debug.Log(
-                $"Stone Combo Check : " +
-                $"{previousStone.StoneName} ¡æ " +
-                $"{currentStone.StoneName}"
-            );
-
-            OnStoneCombo?.Invoke(
-                previousStone,
-                currentStone
-            );
+            OnStoneCombo?.Invoke(previousStone, currentStone);
         }
         
         public void ResetTimeStoneCooldown(BaseStone timeStone)

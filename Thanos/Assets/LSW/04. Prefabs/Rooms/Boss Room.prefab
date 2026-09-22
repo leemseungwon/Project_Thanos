@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4620021976460333486}
   - component: {fileID: 7718993404350979386}
-  - component: {fileID: 4335446475378964811}
+  - component: {fileID: 8654449169092343800}
   m_Layer: 0
   m_Name: Boss Room
   m_TagString: Untagged
@@ -88,7 +88,7 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &4335446475378964811
+--- !u!114 &8654449169092343800
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -97,6 +97,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 2600510199338507893}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e7ba02004d3d464f9c59220f5f4849a9, type: 3}
+  m_Script: {fileID: 11500000, guid: a57e462ead894235a5ea4784c4d4f77b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  bossInstance: {fileID: 0}

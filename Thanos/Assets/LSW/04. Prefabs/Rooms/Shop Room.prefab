@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3970963335531811081}
   - component: {fileID: 6143027788658333422}
-  - component: {fileID: 296626433763626182}
+  - component: {fileID: 4026255417883838723}
   m_Layer: 0
   m_Name: Shop Room
   m_TagString: Untagged
@@ -88,7 +88,7 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &296626433763626182
+--- !u!114 &4026255417883838723
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -97,6 +97,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 7993250482348624655}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e7ba02004d3d464f9c59220f5f4849a9, type: 3}
+  m_Script: {fileID: 11500000, guid: 59a181cb5d484ec0882af8e36417d1d8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  shopUI: {fileID: 0}

@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5557646683411807986}
   - component: {fileID: 2712211381853146429}
-  - component: {fileID: 4400662271526823597}
+  - component: {fileID: 3826027506878118879}
   m_Layer: 0
   m_Name: Reward Room
   m_TagString: Untagged
@@ -88,7 +88,7 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &4400662271526823597
+--- !u!114 &3826027506878118879
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -97,6 +97,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 2607538765822591457}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e7ba02004d3d464f9c59220f5f4849a9, type: 3}
+  m_Script: {fileID: 11500000, guid: 304107936abe455a835b59f3201e3a30, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  treasureChest: {fileID: 0}
