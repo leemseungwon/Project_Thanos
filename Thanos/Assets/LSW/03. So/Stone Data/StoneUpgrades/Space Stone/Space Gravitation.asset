@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4ceca4f000fb4feba7d8c506b6ee3036, type: 3}
+  m_Name: Space Gravitation
+  m_EditorClassIdentifier: Assembly-CSharp::LSW._03._So.Stone_Data.StoneUpgrades.Space_Stone.SpaceGravitationUpgrade
+  icon: {fileID: 21300000, guid: 541080439a688d54ea54ae4ad898abf1, type: 3}
+  title: "\uC778\uB825"
+  description: "\uC77C\uC815\uC2DC\uAC04\uB3D9\uC548 \uBAA8\uB4E0 \uC801\uC744 \uB04C\uC5B4\uB2F9\uAE41\uB2C8\uB2E4."
+  stoneType: 0
+  pullSpeed: 3
+  pullDuration: 5

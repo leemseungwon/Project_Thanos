@@ -9,6 +9,8 @@ namespace LSW._02._Scripts.Entity
     [RequireComponent(typeof(Animator))]
     public class EntityAnimation : MonoBehaviour, IEntityComponent
     {
+        [field:SerializeField] public AnimationData IsMoveAnimationData { get; private set; }
+        
         private HashSet<int> _validParamHashes = new HashSet<int>();
         
         public Animator Animator { get; private set; }

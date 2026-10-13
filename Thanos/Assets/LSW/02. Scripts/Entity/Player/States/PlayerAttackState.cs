@@ -8,40 +8,27 @@ namespace LSW._02._Scripts.Entity.Player.States
         private readonly PlayerController _player;
         private readonly PlayerCombatComponent _combat;
 
-        public PlayerAttackState(BaseEntity player)
+        public PlayerAttackState(PlayerController player)
             : base(player)
         {
-            _player = player as PlayerController;
+            _player = player;
 
             if (_player != null)
             {
                 _combat = _player.Combat;
-
-                if (_combat != null)
-                {
-                    _combat.OnComboFinished += HandleComboFinished;
-                }
             }
         }
 
         public override void Enter(Action endAction = null)
         {
             base.Enter(endAction);
-
-            _player.Movement.EnableMovement(false);
-
-            if (_combat.IsAttacking)
-                return;
             
             if (!_combat.TryAttack())
             {
                 ChangeToNextState();
+                return;
             }
-        }
-
-        private void HandleComboFinished()
-        {
-            ChangeToNextState();
+            _combat.OnAttackFinished += ChangeToNextState;
         }
 
         private void ChangeToNextState()
@@ -56,32 +43,10 @@ namespace LSW._02._Scripts.Entity.Player.States
             }
         }
 
-        public override void Update()
-        {
-            if (_combat.IsAttacking)
-                return;
-            
-            if (_combat.IsWaitingForNextAttack)
-            {
-                ChangeToNextState();
-            }
-        }
-
         public override void Exit()
         {
             base.Exit();
-
-            _player.Movement.EnableMovement(true);
-        }
-
-        public override void Dispose()
-        {
-            base.Dispose();
-
-            if (_combat != null)
-            {
-                _combat.OnComboFinished -= HandleComboFinished;
-            }
+            _combat.OnAttackFinished -= ChangeToNextState;
         }
     }
 }

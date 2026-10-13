@@ -12,13 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ec4a26db7acf4ac7ab3180906b7e2505, type: 3}
   m_Name: PowerStone
   m_EditorClassIdentifier: 
+  icon: {fileID: 21300000, guid: 86c51f4c99603a14eb8b51c31b2abb62, type: 3}
+  title: "\uD30C\uC6CC \uC2A4\uD1A4"
+  description: "\uC8FC\uBCC0 \uC801\uC5D0\uAC8C \uAC15\uB825\uD55C \uD53C\uD574\uB97C \uC90D\uB2C8\uB2E4."
   stoneType: 4
-  stoneName: Power Stone
-  stoneSprite: {fileID: 1790831928422374409, guid: 528ef4680a5d09146941004909b5bf35, type: 3}
-  requiredDamage: 100
-  attackData: {fileID: 11400000, guid: a8bb7e659e5f5834ca7c1f753da16f8b, type: 2}
+  radius: 10
+  damage: 35
+  knockbackPower: 1.5
   enemyLayer:
     serializedVersion: 2
     m_Bits: 64
-  range: 4
-  angle: 60
+  abilityParticleName: Particle_PowerAbility

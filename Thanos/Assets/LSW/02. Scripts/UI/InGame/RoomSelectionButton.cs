@@ -24,7 +24,17 @@ namespace LSW._02._Scripts.UI.InGame
             _room = room;
             _roomSelectUI = roomSelectUI;
             
-            nameText.SetText(room.Type.ToString());
+            nameText.SetText(room.Type switch
+            {
+                RoomType.Start => "시작방",
+                RoomType.Normal => "일반방",
+                RoomType.Elite => "정예방",
+                RoomType.Reward => "보상방",
+                RoomType.Shop => "상점",
+                RoomType.Event => "이벤트",
+                RoomType.Boss => "보스방",
+                _ => room.Type.ToString()
+            });
 
             button.onClick.RemoveAllListeners();
             button.onClick.AddListener(OnClick);

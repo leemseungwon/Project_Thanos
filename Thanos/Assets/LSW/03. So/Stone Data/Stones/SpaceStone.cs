@@ -3,48 +3,74 @@ using UnityEngine;
 
 namespace LSW._03._So.Stone_Data.Stones
 {
-    [CreateAssetMenu(fileName = "SpaceStone", menuName = "So/Data/Stone Data/Space Stone", order = 0)]
+    [CreateAssetMenu(fileName = "SpaceStone", menuName = "So/Data/Stone Data/Stones/Space Stone", order = 0)]
     public class SpaceStone : BaseStone
     {
-        [Header("Space")]
-        public float requiredMoveTime = 30f;
+        [Header("Space Stone")]
+        [SerializeField] private float maxTeleportDistance = 100f;
+        [SerializeField] private LayerMask teleportBlockLayerMask;
 
-        public override void Use(PlayerController player)
+        private Vector2 _lastTeleportOrigin;
+        private Vector2 _lastTeleportDestination;
+
+        public Vector2 LastTeleportOrigin => _lastTeleportOrigin;
+        public Vector2 LastTeleportDestination => _lastTeleportDestination;
+        public bool DidTeleportOnLastUse { get; private set; }
+
+        public override void Use(PlayerController owner)
         {
-            Vector3 previousPosition =
-                player.transform.position;
+            DidTeleportOnLastUse = false;
+            if (owner == null || owner.PlayerCamera == null || owner.Input == null)
+                return;
 
-            Vector3 targetPosition =
-                GetMouseWorldPosition(player);
+            Vector2 origin = owner.Rigidbody.position;
 
-            player.transform.position = targetPosition;
+            Vector3 mouseWorld = owner.PlayerCamera.ScreenToWorldPoint(
+                    new Vector3(owner.Input.MousePosition.x, owner.Input.MousePosition.y,
+                        Mathf.Abs(owner.PlayerCamera.transform.position.z - owner.transform.position.z
+                        )
+                    )
+                );
 
-            player.Movement.ResetMoveTime();
+            Vector2 destination = mouseWorld;
+            Vector2 offset = destination - origin;
 
-            Debug.Log(
-                $"Space Teleport : " +
-                $"{previousPosition} ¡æ {targetPosition}"
-            );
+            if (offset.magnitude > maxTeleportDistance)
+            {
+                destination = origin + offset.normalized * maxTeleportDistance;
+            }
+
+            if (IsDestinationBlocked(owner, origin, destination, teleportBlockLayerMask))
+                return;
+
+            _lastTeleportOrigin = origin;
+            _lastTeleportDestination = destination;
+
+            owner.Rigidbody.position = destination;
+            DidTeleportOnLastUse = true;
         }
 
-        private Vector3 GetMouseWorldPosition(
-            PlayerController player)
+        private static bool IsDestinationBlocked(PlayerController owner, Vector2 origin,
+            Vector2 destination, LayerMask teleportBlockLayerMask)
         {
-            Ray ray =
-                player.PlayerCamera.ScreenPointToRay(
-                    player.Input.MousePosition
-                );
+            Vector2 positionOffset = destination - origin;
+            Collider2D playerColliders = owner.GetComponent<Collider2D>();
+            
+            if (!playerColliders.enabled || playerColliders.isTrigger)
+                return true;
 
-            Plane plane =
-                new Plane(
-                    Vector3.forward,
-                    player.transform.position
-                );
+            Bounds bounds = playerColliders.bounds;
+            Vector2 targetCenter = (Vector2)bounds.center + positionOffset;
+            Collider2D[] overlaps = Physics2D.OverlapBoxAll(
+                targetCenter, bounds.size, 0f, teleportBlockLayerMask);
 
-            if (!plane.Raycast(ray, out float distance))
-                return player.transform.position;
+            foreach (Collider2D overlap in overlaps)
+            {
+                if (!overlap.isTrigger && overlap.attachedRigidbody != owner.Rigidbody)
+                    return true;
+            }
 
-            return ray.GetPoint(distance);
+            return false;
         }
     }
 }

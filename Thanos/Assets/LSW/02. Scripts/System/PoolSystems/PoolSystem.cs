@@ -12,10 +12,12 @@ namespace LSW._02._Scripts.System.PoolSystems
         [SerializeField] private List<PoolingData> pool = new List<PoolingData>();
 
         private readonly Dictionary<string, List<IPoolable>> _pooledObjects = new Dictionary<string, List<IPoolable>>();
+        private readonly Dictionary<string, Func<GameObject>> _runtimePoolFactories = new();
 
         public void Initialize(SystemHandler systemHandler)
         {
             _pooledObjects.Clear();
+            _runtimePoolFactories.Clear();
             for (int i = 0; i < pool.Count; i++)
             {
                 string poolName = pool[i].poolName;
@@ -58,6 +60,14 @@ namespace LSW._02._Scripts.System.PoolSystems
             if (spawnedPool == null)
                 return null;
 
+            return InitializePoolable(spawnedPool);
+        }
+
+        private IPoolable InitializePoolable(GameObject spawnedPool)
+        {
+            if (spawnedPool == null)
+                return null;
+
             IPoolable poolable = spawnedPool.GetComponent<IPoolable>();
             if (poolable != null)
             {
@@ -78,6 +88,23 @@ namespace LSW._02._Scripts.System.PoolSystems
                 Debug.LogWarning($"Created pool object {spawnedPool.name} does not implement IPoolable");
             }
             return poolable;
+        }
+
+        public void RegisterRuntimePool(string poolName, Func<GameObject> factory, int initialPoolSize = 1)
+        {
+            if (string.IsNullOrEmpty(poolName) || factory == null || _pooledObjects.ContainsKey(poolName))
+                return;
+
+            List<IPoolable> instances = new List<IPoolable>();
+            _pooledObjects.Add(poolName, instances);
+            _runtimePoolFactories.Add(poolName, factory);
+
+            for (int i = 0; i < Mathf.Max(0, initialPoolSize); i++)
+            {
+                IPoolable poolable = InitializePoolable(factory());
+                if (poolable != null)
+                    instances.Add(poolable);
+            }
         }
 
         public bool SpawnPool<T>(string poolName, out T pooledObject) where T : IPoolable
@@ -107,6 +134,12 @@ namespace LSW._02._Scripts.System.PoolSystems
                     if (target != null)
                         poolableList.Add(target);
                 }
+                else if (_runtimePoolFactories.TryGetValue(poolName, out Func<GameObject> factory))
+                {
+                    target = InitializePoolable(factory());
+                    if (target != null)
+                        poolableList.Add(target);
+                }
             }
 
             if (target != null && target is T castedTarget)
@@ -124,6 +157,11 @@ namespace LSW._02._Scripts.System.PoolSystems
 
             Debug.LogError("Failed to spawn pool object");
             return false;
+        }
+
+        public bool HasPool(string poolName)
+        {
+            return !string.IsNullOrEmpty(poolName) && _pooledObjects.ContainsKey(poolName);
         }
 
         public void DespawnPool(string poolName, IPoolable poolable)
@@ -146,9 +184,9 @@ namespace LSW._02._Scripts.System.PoolSystems
                         rb.isKinematic = true;
                     }
 
+                    component.gameObject.SetActive(false);
                     component.transform.position = Vector3.zero;
                     component.transform.rotation = Quaternion.identity;
-                    component.gameObject.SetActive(false);
                     
                     component.gameObject.transform.SetParent(gameObject.transform);
                 }
@@ -171,6 +209,7 @@ namespace LSW._02._Scripts.System.PoolSystems
                 }
             }
             _pooledObjects.Clear();
+            _runtimePoolFactories.Clear();
         }
     }
 }

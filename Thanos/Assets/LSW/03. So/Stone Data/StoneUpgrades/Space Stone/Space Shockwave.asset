@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cef899afec9a4688a5264ecc19a3683d, type: 3}
+  m_Name: Space Shockwave
+  m_EditorClassIdentifier: Assembly-CSharp::LSW._03._So.Stone_Data.StoneUpgrades.Space_Stone.SpaceShockwaveUpgrade
+  icon: {fileID: 21300000, guid: 541080439a688d54ea54ae4ad898abf1, type: 3}
+  title: "\uCC99\uB825"
+  description: "\uC21C\uAC04\uC774\uB3D9 \uC704\uCE58\uC5D0 \uCDA9\uACA9\uD30C\uB97C \uBC1C\uC0DD\uC2DC\uD0B5\uB2C8\uB2E4. "
+  stoneType: 0
+  shockwaveAttackData: {fileID: 11400000, guid: 71460db2d6006314791ac733f247e81a, type: 2}
+  radius: 10
+  enemyLayer:
+    serializedVersion: 2
+    m_Bits: 64

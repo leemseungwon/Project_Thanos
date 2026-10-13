@@ -7,5 +7,6 @@ namespace LSW._03._So.Entity_Stats.Player
     {
         public float dashSpeed = 10f;
         public float dashDuration = 0.5f;
+        [Min(0f)] public float dashCooldown = 1f;
     }
 }

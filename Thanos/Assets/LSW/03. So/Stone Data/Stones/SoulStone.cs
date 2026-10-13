@@ -1,43 +1,56 @@
+
 using LSW._02._Scripts.Entity;
+using LSW._02._Scripts.Entity.Enemy;
 using LSW._02._Scripts.Entity.Player;
-using LSW._03._So.Attack_Data;
+using LSW._02._Scripts.Environment.Particle;
+using LSW._02._Scripts.System;
+using LSW._02._Scripts.System.PoolSystems;
 using UnityEngine;
 
 namespace LSW._03._So.Stone_Data.Stones
 {
-    [CreateAssetMenu(fileName = "SoulStone", menuName = "So/Data/Stone Data/Soul Stone", order = 0)]
+    [CreateAssetMenu(fileName = "SoulStone", menuName = "So/Data/Stone Data/Stones/Soul Stone", order = 0)]
     public class SoulStone : BaseStone
     {
-        [Header("Condition")]
-        [SerializeField] private int requiredKillCount = 5;
-
-        [Header("Ability")]
-        [SerializeField] private float explosionRadius = 5f;
-        [SerializeField] private AttackData attackData;
+        [Header("Soul Stone")]
+        [SerializeField] private float radius = 3f;
+        [SerializeField] private float moveSpeedMultiplier = 0.5f;
+        [SerializeField] private float attackDamageMultiplier = 0.5f;
+        [SerializeField] private float duration = 5f;
         [SerializeField] private LayerMask enemyLayer;
+        [SerializeField] private string abilityParticleName = "Particle_SoulAbility";
 
-        public int RequiredKillCount =>
-            requiredKillCount;
+        public float Radius => radius;
+        public LayerMask EnemyLayer => enemyLayer;
 
         public override void Use(PlayerController owner)
         {
-            Collider2D[] hits = Physics2D.OverlapCircleAll(
-                owner.transform.position,
-                explosionRadius,
-                enemyLayer
-            );
+            if (owner == null)
+                return;
+
+            if (SystemHandler.Instance.GetSystem(out PoolSystem poolSystem))
+            {
+                if(poolSystem.SpawnPool(abilityParticleName, out PoolingParticle particle))
+                {
+                    particle.transform.position = owner.transform.position;
+                }
+            }
+            
+            Collider2D[] hits = Physics2D.OverlapCircleAll(owner.transform.position, radius, enemyLayer);
 
             foreach (Collider2D hit in hits)
             {
-                BaseEntity enemy =
-                    hit.GetComponentInParent<BaseEntity>();
-
-                if (enemy == null || enemy == owner)
+                if (!hit.TryGetComponent(out BaseEnemy enemy))
                     continue;
-                
-                Vector2 dir = (hit.transform.position - owner.transform.position).normalized;
-                
-                enemy.TakeDamage(attackData.attackDamage + owner.CurrentAttackDamage, dir, attackData.knockbackPower, attackData.stunDuration, owner);
+
+                if (!enemy.GetCompo(out EntityBuffComponent buff))
+                    continue;
+
+                buff.ApplyMoveSpeedMultiplier("SoulStone_Slow",
+                    moveSpeedMultiplier, duration);
+
+                buff.ApplyAttackDamageMultiplier("SoulStone_DamageDown",
+                    attackDamageMultiplier, duration);
             }
         }
     }

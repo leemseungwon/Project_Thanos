@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ef46be3d0c584d3993c841acc94c40f0, type: 3}
+  m_Name: Power Disable
+  m_EditorClassIdentifier: Assembly-CSharp::LSW._03._So.Stone_Data.StoneUpgrades.Power_Stone.PowerDisableUpgrade
+  icon: {fileID: 21300000, guid: 86c51f4c99603a14eb8b51c31b2abb62, type: 3}
+  title: "\uC57D\uC810 \uACA9\uD30C"
+  description: "\uC77C\uC815 \uC2DC\uAC04\uB3D9\uC548 \uB370\uBBF8\uC9C0 \uC99D\uAC00 \uBC0F \uD53C\uD574\uB97C \uBC1B\uC740 \uC801\uC740 \uC77C\uC815\uC2DC\uAC04\uB3D9\uC548 \uBB34\uB825\uD654 \uC0C1\uD0DC\uC5D0 \uBE60\uC9D1\uB2C8\uB2E4."
+  stoneType: 4
+  duration: 2

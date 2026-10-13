@@ -6,6 +6,7 @@ using LSW._02._Scripts.System;
 using LSW._02._Scripts.System.PoolSystems;
 using LSW._02._Scripts.System.RoomSystems;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace LSW._02._Scripts.UI.InGame
 {
@@ -91,6 +92,14 @@ namespace LSW._02._Scripts.UI.InGame
                 rect.anchoredPosition =
                     GetHexPosition(room.Coordinate);
 
+                if (room != currentRoom && room.Cleared)
+                {
+                    if(button.TryGetComponent(out Image image))
+                    {
+                        image.color = Color.green;
+                    }
+                }
+                
                 // 현재 방에서 갈 수 있는 방만 활성화
                 bool interactable =
                     selectableRooms.Contains(room);

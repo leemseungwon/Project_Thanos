@@ -1,0 +1,17 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f0baad69898642d1a1e28c694635a900, type: 3}
+  m_Name: StoneUpgradeChoice
+  m_EditorClassIdentifier: Assembly-CSharp::LSW._03._So.Stone_Data.UpgradeChoiceRewardSo
+  icon: {fileID: -7219876762271536436, guid: 65190f2367d2060448c5017cdaeb2e52, type: 3}
+  title: "\uC2A4\uD1A4 \uAC15\uD654"
+  description: "\uAC00\uC9C0\uACE0 \uC788\uB294 \uC2A4\uD1A4 \uC911 \uD558\uB098\uB97C \uAC15\uD654\uD569\uB2C8\uB2E4."
