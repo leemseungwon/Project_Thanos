@@ -7,7 +7,5 @@ namespace LSW._03._So.Attack_Data.Enemy
     public class EnemyAttackData : AttackData
     {
         public float attackRadius;
-        public float attackCoolDown;
-        public bool canParry = true;
     }
 }

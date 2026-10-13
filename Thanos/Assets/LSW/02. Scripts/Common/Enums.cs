@@ -29,9 +29,9 @@ namespace LSW._02._Scripts.Common
         Normal,
         Elite,
         Reward,
+        Boss,
         Shop,
-        Event,
-        Boss
+        Event
     }
     
     [Serializable]
@@ -44,10 +44,10 @@ namespace LSW._02._Scripts.Common
         Power,
         Mind
     }
-
-    public enum SlimeAttackType
+    
+    public enum StatModifierType
     {
-        Front,
-        Whirlwind
+        MoveSpeed,
+        AttackDamage
     }
 }

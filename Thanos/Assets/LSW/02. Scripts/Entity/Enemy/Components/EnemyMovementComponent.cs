@@ -13,7 +13,7 @@ namespace LSW._02._Scripts.Entity.Enemy.Components
         private bool _isEnabledMovement = true;
 
         public bool IsPlayerInStopRange =>
-            Vector2.Distance(_owner.transform.position, _owner.Player.transform.position) <= stopChaseDistance;
+            Vector2.Distance(_owner.transform.position, _owner.Target.transform.position) <= stopChaseDistance;
 
         public void Initialize(BaseEntity owner)
         {
@@ -66,7 +66,11 @@ namespace LSW._02._Scripts.Entity.Enemy.Components
             if (_rigidbody != null)
                 _rigidbody.linearVelocity = Vector2.zero;
         }
-        
-        public void Reset() { }
+
+        public void Reset()
+        {
+            Stop();
+            _isEnabledMovement = true;
+        }
     }
 }

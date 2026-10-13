@@ -1,20 +1,28 @@
 
 using LSW._02._Scripts.Common;
 using LSW._02._Scripts.Entity.Player;
+using LSW._02._Scripts.Entity.Player.Component;
 using UnityEngine;
 
 namespace LSW._03._So.Stone_Data
 {
-    public abstract class BaseStone : ScriptableObject
+    public abstract class BaseStone : BaseUpgradeSo
     {
-        [Header("Stone Info")]
         [SerializeField] private StoneType stoneType;
-        [SerializeField] private string stoneName;
-        [SerializeField] private Sprite stoneSprite;
 
         public StoneType StoneType => stoneType;
-        public string StoneName => stoneName;
-        public Sprite StoneSprite => stoneSprite;
+        public string StoneName => Title;
+        public string StoneDescription => Description;
+        public Sprite StoneSprite => Icon;
+
+        public override bool Apply(PlayerController player)
+        {
+            if (player == null || !player.GetCompo(out PlayerStoneComponent stones))
+                return false;
+
+            stones.GetStone(this);
+            return true;
+        }
         
         public abstract void Use(PlayerController owner);
         
@@ -29,6 +37,5 @@ namespace LSW._03._So.Stone_Data
         public virtual void OnCombo(PlayerController owner, BaseStone previousStone)
         {
         }
-        
     }
 }

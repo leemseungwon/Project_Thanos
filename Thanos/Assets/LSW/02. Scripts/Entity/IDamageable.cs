@@ -7,7 +7,6 @@ namespace LSW._02._Scripts.Entity
     public interface IDamageable
     {
         bool TakeDamage(int finalDamage, Vector2 knockBackDirection, float knockBackPower, float stunDuration,
-            BaseEntity attacker, AttackData attackData = null);
-
+            BaseEntity attacker);
     }
 }

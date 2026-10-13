@@ -1,85 +1,60 @@
-using System.Collections.Generic;
+
+using System;
 using LSW._02._Scripts.Common;
 using LSW._02._Scripts.Entity.Player;
-using LSW._02._Scripts.Entity.Player.Component;
-using LSW._03._So.Stone_Data;
-using UnityEngine;
+using LSW._02._Scripts.UI.InGame;
+using LSW._02._Scripts.UI.Rooms.Stone_Selections;
 
 namespace LSW._02._Scripts.Rooms
 {
     public class StartRoom : BaseRoom
     {
         public override RoomType Type => RoomType.Start;
-
-        [Header("Start Room Settings")]
-        [SerializeField] private UI.Rooms.StoneSelectionUI stoneSelectionUI;
-        [SerializeField] private List<BaseStone> availableStones = new();
-
-        public override void Initialize()
+        
+        private PlayerController player;
+        private StoneSelectionUI stoneSelectionUI;
+        
+        private StoneSelectionUI GetStoneSelectionUI()
         {
-            base.Initialize();
-
-            if (stoneSelectionUI != null)
-                stoneSelectionUI.Hide();
+            if (stoneSelectionUI == null)
+            {
+                InGameUI inGameUI = GetInGameUI();
+                if (inGameUI != null)
+                {
+                    stoneSelectionUI = inGameUI.StoneSelectionUI;
+                }
+            }
+            return stoneSelectionUI;
         }
 
-        public override void Spawn()
+        public override void StartRooms()
         {
-            base.Spawn();
             ShowStoneSelection();
         }
 
         private void ShowStoneSelection()
         {
-            if (stoneSelectionUI != null)
-            {
-                stoneSelectionUI.Show(this);
-            }
-            else
+            var ui = GetStoneSelectionUI();
+            if (ui == null)
             {
                 ClearRoom();
-            }
-        }
-
-        public void OnStoneSelected(StoneType selectedStone)
-        {
-            BaseStone targetStone = availableStones.Find(s => s != null && s.StoneType == selectedStone);
-            if (targetStone != null)
-            {
-                OnStoneSelected(targetStone);
                 return;
             }
 
-            PlayerController player = GetPlayer();
-            if (player != null && player.GetCompo(out PlayerStoneComponent stoneComponent))
+            Action showStoneSelection = () =>
             {
-                if (targetStone != null)
-                {
-                    stoneComponent.GetStone(targetStone);
-                }
-            }
+                GetPlayer()?.EnableInput(false);
+                ui.Show(ClearRoom);
+            };
 
-            ClearRoom();
-
-            if (stoneSelectionUI != null)
-                stoneSelectionUI.Hide();
+            if (!DropRewardPickup(showStoneSelection))
+                showStoneSelection();
         }
 
-        public void OnStoneSelected(BaseStone selectedStone)
+        public override void ClearRoom()
         {
-            if (selectedStone != null)
-            {
-                PlayerController player = GetPlayer();
-                if (player != null && player.GetCompo(out PlayerStoneComponent stoneComponent))
-                {
-                    stoneComponent.GetStone(selectedStone);
-                }
-            }
-
-            ClearRoom();
-
-            if (stoneSelectionUI != null)
-                stoneSelectionUI.Hide();
+            base.ClearRoom();
+            GetPlayer().EnableInput(true);
         }
     }
 }

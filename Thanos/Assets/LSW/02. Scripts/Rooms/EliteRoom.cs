@@ -1,11 +1,16 @@
+using System;
 using System.Collections.Generic;
 using LSW._02._Scripts.Common;
 using LSW._02._Scripts.Entity.Enemy;
 using LSW._02._Scripts.Entity.Player;
 using LSW._02._Scripts.Entity.Player.Component;
+using LSW._02._Scripts.System;
 using LSW._02._Scripts.System.PoolSystems;
+using LSW._02._Scripts.System.StoneSystems;
+using LSW._02._Scripts.UI.Rooms.Reward_Selections;
 using LSW._03._So.Stone_Data;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace LSW._02._Scripts.Rooms
 {
@@ -16,37 +21,34 @@ namespace LSW._02._Scripts.Rooms
         [Header("Elite Room Settings")]
         [SerializeField] private bool isBossType = true;
         [SerializeField] private int eliteCount = 1;
-        [SerializeField] private string elitePoolName = "Enemy_Golem";
+        [SerializeField, Range(0f, 1f)] private float rewardOrbDropChance = 0.5f;
+        [SerializeField] private string[] elitePoolName = { "Enemy_Rat" };
         [SerializeField] private Transform[] spawnPoints;
         [SerializeField] private float hpMultiplier = 2.0f;
         [SerializeField] private float damageMultiplier = 1.5f;
         [SerializeField] private float scaleMultiplier = 1.3f;
-        [SerializeField] private UI.Rooms.RewardSelectionUI specialRewardUI;
-        [SerializeField] private List<BaseStoneUpgrade> eliteUpgrades = new();
-
         private readonly List<BaseEnemy> _spawnedElites = new();
+        private readonly Dictionary<BaseEnemy, string> _elitePoolNames = new();
         private int _aliveEliteCount;
 
-        public override void Initialize()
+        private RewardSelectionUI GetRewardSelectionUI()
         {
-            base.Initialize();
-
-            if (specialRewardUI != null)
-                specialRewardUI.gameObject.SetActive(false);
+            return GetInGameUI()?.RewardSelectionUI;
         }
-
+        
         public override void Spawn()
         {
             base.Spawn();
             _spawnedElites.Clear();
+            _elitePoolNames.Clear();
             _aliveEliteCount = 0;
-
-            if (specialRewardUI != null)
-                specialRewardUI.gameObject.SetActive(false);
-
-            SpawnElites();
         }
 
+        public override void StartRooms()
+        {
+            SpawnElites();
+        }
+        
         private void SpawnElites()
         {
             PoolSystem poolSystem = GetPoolSystem();
@@ -60,7 +62,7 @@ namespace LSW._02._Scripts.Rooms
 
             for (int i = 0; i < countToSpawn; i++)
             {
-                if (poolSystem.SpawnPool(elitePoolName, out BaseEnemy enemy))
+                if (poolSystem.SpawnPool(elitePoolName[i % elitePoolName.Length], out BaseEnemy enemy))
                 {
                     Vector3 spawnPos = transform.position;
                     if (spawnPoints != null && spawnPoints.Length > 0)
@@ -73,16 +75,19 @@ namespace LSW._02._Scripts.Rooms
                     }
 
                     enemy.transform.position = spawnPos;
-                    enemy.transform.localScale = Vector3.one * scaleMultiplier;
+                    enemy.transform.localScale = enemy.InitialLocalScale * scaleMultiplier;
 
                     // ¿¤¸®Æ® ¸ó½ºÅÍ ½ºÅÈ °­È­
                     enemy.ChangeEntityStat(EntityStatType.MaxHp, MathOperation.Multiply, hpMultiplier);
-                    enemy.InitStat();
+                    enemy.Heal(enemy.MaxHp);
                     enemy.ChangeEntityStat(EntityStatType.AttackDamage, MathOperation.Multiply, damageMultiplier);
 
                     _spawnedElites.Add(enemy);
+                    _elitePoolNames[enemy] = elitePoolName[i % elitePoolName.Length];
                     _aliveEliteCount++;
                     enemy.OnDeathEvent += () => OnEnemyDeath(enemy);
+                    
+                    SpawnedPoolObjects.Add(enemy);
                 }
             }
 
@@ -94,6 +99,9 @@ namespace LSW._02._Scripts.Rooms
 
         private void OnEnemyDeath(BaseEnemy enemy)
         {
+            if (Random.value < rewardOrbDropChance)
+                DropRewardPickup(ShowSpecialReward, lockedUntilRoomClear: true,
+                    spawnPosition: enemy.transform.position);
             _aliveEliteCount--;
             if (_aliveEliteCount <= 0)
             {
@@ -103,64 +111,130 @@ namespace LSW._02._Scripts.Rooms
 
         public void OnEliteDefeated()
         {
-            ShowSpecialReward();
+            UnlockRewardPickups();
+            ClearRoom();
+            if (_spawnedElites.Count == 0 || !HasRewardPickups)
+                ShowSpecialReward();
         }
 
         private void ShowSpecialReward()
         {
-            if (specialRewardUI != null)
+            PlayerController player = GetPlayer();
+            RewardSelectionUI ui = GetRewardSelectionUI();
+
+            if (player == null)
             {
-                specialRewardUI.Show(this);
-            }
-            else
-            {
-                ApplySpecialReward(0);
                 ClearRoom();
+                return;
             }
+
+            if (ui != null)
+            {
+                Action showUpgradeChoices = () =>
+                {
+                    player.EnableInput(false);
+                    ui.ShowRandomUpgrades(upgrade =>
+                    {
+                        if (upgrade != null &&
+                            player.GetCompo(out PlayerStoneComponent stoneComponent))
+                        {
+                            stoneComponent.AddStoneUpgrade(upgrade);
+                        }
+
+                        CompleteRewardSelection(player);
+                    });
+                };
+
+                if (DropRewardPickup(showUpgradeChoices))
+                    return;
+
+                showUpgradeChoices();
+                return;
+            }
+
+            player.ChangeEntityStat(EntityStatType.AttackDamage, MathOperation.Add, 15);
+            CompleteRewardSelection(player);
         }
 
         public void OnRewardSelected(int index = 0)
         {
-            ApplySpecialReward(index);
-            ClearRoom();
-
-            if (specialRewardUI != null)
-                specialRewardUI.gameObject.SetActive(false);
-        }
-
-        private void ApplySpecialReward(int index)
-        {
             PlayerController player = GetPlayer();
-            if (player != null)
+            if (player == null)
+                return;
+
+            if (index == 2)
             {
-                switch (index)
+                List<BaseStoneUpgrade> availableUpgrades = GetAvailableUpgrades(player);
+                if (availableUpgrades.Count > 0)
                 {
-                    case 0:
-                        player.ChangeEntityStat(EntityStatType.AttackDamage, MathOperation.Add, 15);
-                        break;
-                    case 1:
-                        player.ChangeEntityStat(EntityStatType.MaxHp, MathOperation.Add, 50);
-                        player.Heal(player.MaxHp);
-                        break;
-                    case 2:
-                        if (eliteUpgrades.Count > 0 && player.GetCompo(out PlayerStoneComponent stoneComponent))
+                    RewardSelectionUI ui = GetRewardSelectionUI();
+                    if (ui != null)
+                    {
+                        player.EnableInput(true);
+                        Action showUpgradeChoices = () =>
                         {
-                            BaseStoneUpgrade upgrade = eliteUpgrades[Random.Range(0, eliteUpgrades.Count)];
-                            if (upgrade != null)
-                                stoneComponent.AddStoneUpgrade(upgrade);
-                        }
-                        else
-                        {
-                            player.ChangeEntityStat(EntityStatType.MoveSpeed, MathOperation.Add, 1.5f);
-                        }
-                        break;
-                    default:
-                        player.Heal(player.MaxHp);
-                        break;
+                            player.EnableInput(false);
+                            ui.ShowRandomUpgrades(upgrade =>
+                            {
+                                if (upgrade != null &&
+                                    player.GetCompo(out PlayerStoneComponent stoneComponent))
+                                {
+                                    stoneComponent.AddStoneUpgrade(upgrade);
+                                }
+
+                                CompleteRewardSelection(player);
+                            });
+                        };
+
+                        if (!DropRewardPickup(showUpgradeChoices))
+                            showUpgradeChoices();
+                        return;
+                    }
                 }
+
+                player.ChangeEntityStat(EntityStatType.MoveSpeed, MathOperation.Add, 1.5f);
             }
+            else if (index == 0)
+                player.ChangeEntityStat(EntityStatType.AttackDamage, MathOperation.Add, 15);
+            else if (index == 1)
+            {
+                player.ChangeEntityStat(EntityStatType.MaxHp, MathOperation.Add, 50);
+                player.Heal(player.MaxHp);
+            }
+            else
+                player.Heal(player.MaxHp);
+
+            CompleteRewardSelection(player);
         }
 
+        private List<BaseStoneUpgrade> GetAvailableUpgrades(PlayerController player)
+        {
+            List<BaseStoneUpgrade> result = new();
+            if (SystemHandler.Instance.GetSystem(out StoneSystem stoneSystem))
+            {
+                if (!player.GetCompo(out PlayerStoneComponent stoneComponent))
+                    return result;
+
+                BaseStoneUpgrade upgrade = stoneSystem.GetRandomStoneUpgrade(stoneComponent);
+                if (upgrade != null && stoneComponent.HasStone(upgrade.StoneType))
+                    result.Add(upgrade);
+            }
+            return result;
+        }
+
+        private static List<string> GetUpgradeLabels(List<BaseStoneUpgrade> upgrades)
+        {
+            List<string> labels = new();
+            foreach (BaseStoneUpgrade upgrade in upgrades)
+                labels.Add($"{upgrade.UpgradeName}\n{upgrade.Description}");
+            return labels;
+        }
+
+        private void CompleteRewardSelection(PlayerController player)
+        {
+            player.EnableInput(true);
+            ClearRoom();
+        }
         public override void Despawn()
         {
             base.Despawn();
@@ -171,12 +245,13 @@ namespace LSW._02._Scripts.Rooms
                 {
                     if (enemy != null && enemy.gameObject.activeSelf)
                     {
-                        enemy.transform.localScale = Vector3.one;
-                        poolSystem.DespawnPool(elitePoolName, enemy);
+                        if (_elitePoolNames.TryGetValue(enemy, out string poolName))
+                            poolSystem.DespawnPool(poolName, enemy);
                     }
                 }
             }
             _spawnedElites.Clear();
+            _elitePoolNames.Clear();
             _aliveEliteCount = 0;
         }
     }

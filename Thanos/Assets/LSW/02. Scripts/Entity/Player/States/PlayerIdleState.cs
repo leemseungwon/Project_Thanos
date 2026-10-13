@@ -8,16 +8,11 @@ namespace LSW._02._Scripts.Entity.Player.States
     public class PlayerIdleState : EntityState
     {
         private readonly PlayerController _player;
-        private readonly PlayerAnimation _playerAnimation;
         
-        public PlayerIdleState(BaseEntity player)
+        public PlayerIdleState(PlayerController player)
             : base(player)
         {
-            _player = player as PlayerController;
-            if (Animation != null)
-            {
-                _playerAnimation = Animation as PlayerAnimation;
-            }
+            _player = player;
         }
 
         public override void Enter(Action endAction = null)
@@ -25,9 +20,6 @@ namespace LSW._02._Scripts.Entity.Player.States
             base.Enter(endAction);
             
             _player.Movement.Stop();
-            
-            if(_playerAnimation != null)
-                _player.Animation.SetParam(_playerAnimation.MoveAnimationData, false);
         }
 
         public override void Update()

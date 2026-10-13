@@ -6,12 +6,10 @@ namespace LSW._02._Scripts.Entity.Player.Component
     public class PlayerMovementComponent : MonoBehaviour, IEntityComponent
     {
         public Vector2 MoveDirection { get; private set; }
-        public float TotalMoveTime => _totalMoveTime;
-        public bool IsEnabledMovement { get; private set; }= true;
+        public bool IsEnabledMovement { get; private set; } = true;
         
         private Rigidbody2D _rigidbody;
         private BaseEntity _owner;
-        private float _totalMoveTime;
         
         public void Initialize(BaseEntity owner)
         {
@@ -30,7 +28,6 @@ namespace LSW._02._Scripts.Entity.Player.Component
                 return;
             
             _rigidbody.linearVelocity = MoveDirection * _owner.CurrentMoveSpeed;
-            _totalMoveTime += Time.deltaTime;
         }
 
         public void Stop()
@@ -51,11 +48,6 @@ namespace LSW._02._Scripts.Entity.Player.Component
                 return;
             
             _rigidbody.linearVelocity = direction.normalized * force;
-        }
-
-        public void ResetMoveTime()
-        {
-            _totalMoveTime = 0;
         }
         
         public void Reset() { }

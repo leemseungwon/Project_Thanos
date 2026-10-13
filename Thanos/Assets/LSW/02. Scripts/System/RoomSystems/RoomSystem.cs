@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using LSW._02._Scripts.Common;
+using LSW._02._Scripts.Entity;
+using LSW._02._Scripts.Entity.Enemy;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -35,12 +37,6 @@ namespace LSW._02._Scripts.System.RoomSystems
 
             new RoomSpawnWeight
             {
-                roomType = RoomType.Shop,
-                weight = 15f
-            },
-
-            new RoomSpawnWeight
-            {
                 roomType = RoomType.Elite,
                 weight = 10f
             },
@@ -50,11 +46,15 @@ namespace LSW._02._Scripts.System.RoomSystems
                 roomType = RoomType.Reward,
                 weight = 10f
             },
-
+            new RoomSpawnWeight
+            {
+                roomType = RoomType.Shop,
+                weight = 10f
+            },
             new RoomSpawnWeight
             {
                 roomType = RoomType.Event,
-                weight = 15f
+                weight = 10f
             }
         };
 
@@ -66,6 +66,8 @@ namespace LSW._02._Scripts.System.RoomSystems
         private RoomNode _bossRoom;
 
         public RoomNode CurrentRoom { get; private set; }
+        public bool IsRunWon { get; private set; }
+        public event Action OnRunWon;
 
         public RoomNode StartRoom => _startRoom;
 
@@ -84,11 +86,20 @@ namespace LSW._02._Scripts.System.RoomSystems
             new(0, 1)
         };
 
+        private void Start()
+        {
+            if (SystemHandler.Instance.GetSystem(out _roomRuntimeSystem))
+            {
+                _roomRuntimeSystem.LoadRoom(_startRoom);
+            }
+        }
+
         public void GenerateMap()
         {
             _rooms.Clear();
+            IsRunWon = false;
 
-            // ½ÃÀÛ¹æ
+            // ï¿½ï¿½ï¿½Û¹ï¿½
             _startRoom = CreateRoom(Vector2Int.zero, RoomType.Start);
 
             CurrentRoom = _startRoom;
@@ -96,7 +107,7 @@ namespace LSW._02._Scripts.System.RoomSystems
             // BFS
             GenerateRoomGraph();
 
-            // ¹æ Å¸ÀÔ ¹èÁ¤
+            // ï¿½ï¿½ Å¸ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
             AssignRoomTypes();
 
             Debug.Log(
@@ -155,7 +166,7 @@ namespace LSW._02._Scripts.System.RoomSystems
                             coordinate,
                             RoomType.Normal);
 
-                    // »ý¼º ´ç½Ã ºÎ¸ð¿Í ¿¬°á
+                    // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½Î¸ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
                     current.AddNeighbor(nextRoom);
                     nextRoom.AddNeighbor(current);
 
@@ -163,7 +174,7 @@ namespace LSW._02._Scripts.System.RoomSystems
                 }
             }
 
-            // ¡Ú À°°¢Çü ÁÂÇ¥»ó ½ÇÁ¦ ÀÎÁ¢ÇÑ ¸ðµç ¹æ ¿¬°á
+            // ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ç¥ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
             ConnectAllNeighbors();
         }
         
@@ -198,10 +209,6 @@ namespace LSW._02._Scripts.System.RoomSystems
                     Mathf.Abs(q + r)) / 2;
         }
 
-        // =========================================================
-        // Room Type
-        // =========================================================
-
         private void AssignRoomTypes()
         {
             List<RoomNode> candidates = new();
@@ -214,7 +221,7 @@ namespace LSW._02._Scripts.System.RoomSystems
                 candidates.Add(room);
             }
 
-            // °¡Àå ¸Õ ¹æÀ» º¸½º·Î ÁöÁ¤
+            // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
             _bossRoom =
                 FindFarthestRoom();
 
@@ -226,7 +233,7 @@ namespace LSW._02._Scripts.System.RoomSystems
                 candidates.Remove(_bossRoom);
             }
 
-            // ³ª¸ÓÁö ¹æ¿¡ °¡ÁßÄ¡ ·£´ý ¹èÁ¤
+            // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½æ¿¡ ï¿½ï¿½ï¿½ï¿½Ä¡ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
             foreach (RoomNode room in candidates)
             {
                 room.Type =
@@ -271,10 +278,6 @@ namespace LSW._02._Scripts.System.RoomSystems
             return RoomType.Normal;
         }
 
-        // =========================================================
-        // Boss
-        // =========================================================
-
         private RoomNode FindFarthestRoom()
         {
             RoomNode farthestRoom = null;
@@ -298,10 +301,6 @@ namespace LSW._02._Scripts.System.RoomSystems
 
             return farthestRoom;
         }
-
-        // =========================================================
-        // BFS Distance
-        // =========================================================
 
         private int GetDistanceFromStart(
             RoomNode target)
@@ -337,6 +336,9 @@ namespace LSW._02._Scripts.System.RoomSystems
 
             return -1;
         }
+
+        public List<BaseEnemy> GetSpawnedObjects()
+            => CurrentRoom.RuntimeObject.SpawnedPoolObjects;
         
         public IReadOnlyList<RoomNode> GetNextRooms()
         {
@@ -372,7 +374,6 @@ namespace LSW._02._Scripts.System.RoomSystems
 
             CurrentRoom = nextRoom;
             CurrentRoom.Visited = true;
-            CurrentRoom.Cleared = false;
 
             _roomRuntimeSystem.LoadRoom(CurrentRoom);
         }
@@ -384,14 +385,14 @@ namespace LSW._02._Scripts.System.RoomSystems
                 return;
 
             CurrentRoom.Cleared = true;
-
-            Debug.Log(
-                $"Room Cleared : {CurrentRoom.Type}");
+            if (CurrentRoom == _bossRoom && !IsRunWon)
+            {
+                IsRunWon = true;
+                OnRunWon?.Invoke();
+            }
         }
 
-        private RoomNode CreateRoom(
-            Vector2Int coordinate,
-            RoomType type)
+        private RoomNode CreateRoom( Vector2Int coordinate, RoomType type)
         {
             RoomNode room = new RoomNode(coordinate,
                     type);
@@ -400,10 +401,6 @@ namespace LSW._02._Scripts.System.RoomSystems
 
             return room;
         }
-
-        // =========================================================
-        // Utility
-        // =========================================================
 
         private void ShuffleSameDistance<T>(List<T> list)
         {
@@ -422,16 +419,12 @@ namespace LSW._02._Scripts.System.RoomSystems
         public void Initialize(SystemHandler systemHandler)
         {
             GenerateMap();
-
-            if (systemHandler.GetSystem(out _roomRuntimeSystem))
-            {
-                _roomRuntimeSystem.LoadRoom(_startRoom);
-            }
-            ClearCurrentRoom();
+            _startRoom.Visited = true;
         }
 
         public void Reset()
         {
+            IsRunWon = false;
         }
     }
 }

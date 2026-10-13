@@ -17,6 +17,6 @@ namespace LSW._02._Scripts.System.HandlePlayerSystems
         
         public void Initialize(SystemHandler systemHandler) { }
         
-        public void Reset() { }
+        public void Reset() { } 
     }
 }
